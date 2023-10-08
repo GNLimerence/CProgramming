@@ -1,71 +1,74 @@
-#include <bits/stdc++.h>
-
+#include <iostream>
+#include <map>
 using namespace std;
-
-bool checkPhone(string s)
+map<string, int> quantity, timeP;
+//hàm kiểm tra số điện thoại 
+bool check(string phoneNumber)
 {
-    if (s.length() != 10)
+    //nếu số điện thoại không phải là 10 số
+    if (phoneNumber.length() != 10)
         return false;
-    for (int i = 0; i < s.length(); i++)
-        if (!(s[i] >= '0' && s[i] <= '9'))
+    //kiểm tra các chữ số có phải trong khoảng từ 0-9
+    for (int i = 0; i < phoneNumber.length(); i++)
+        if (!(phoneNumber[i] >= '0' && phoneNumber[i] <= '9'))
             return false;
     return true;
 }
-
-int countTime(string ftime, string etime)
+//hàm tính thời gian gọi
+int count(string start, string end)
 {
-    int startTime = 3600 * ((ftime[0] - '0') * 10 + ftime[1] - '0') + 60 * ((ftime[3] - '0') * 10 + ftime[4] - '0') + ((ftime[6] - '0') * 10 + ftime[7] - '0');
-    int endTime = 3600 * ((etime[0] - '0') * 10 + etime[1] - '0') + 60 * ((etime[3] - '0') * 10 + etime[4] - '0') + ((etime[6] - '0') * 10 + etime[7] - '0');
+    int startTime = 3600 * ((start[0] - '0') * 10 + start[1] - '0') + 60 * ((start[3] - '0') * 10 + start[4] - '0') + ((start[6] - '0') * 10 + start[7] - '0');
+    int endTime = 3600 * ((end[0] - '0') * 10 + end[1] - '0') + 60 * ((end[3] - '0') * 10 + end[4] - '0') + ((end[6] - '0') * 10 + end[7] - '0');
     return endTime - startTime;
 }
-
-map<string, int> numberCalls, timeCall;
-
 int main()
 {
     ios_base::sync_with_stdio(0);
     cin.tie(NULL);
     cout.tie(NULL);
-    string type;
-    int totalCalls = 0;
-    int incorrectPhone = 0;
+    string choice;
+    int total = 0;
+    int incorrect = 0;
     do
     {
-        cin >> type;
-        if (type == "#")
+        cin >> choice;
+        if (choice == "#")
             continue;
-        ++totalCalls;
-        string fnum, tnum, date, ftime, etime;
-        cin >> fnum >> tnum >> date >> ftime >> etime;
-        if (!checkPhone(fnum) || !checkPhone(tnum))
-            ++incorrectPhone;
-        numberCalls[fnum]++;
-        timeCall[fnum] += countTime(ftime, etime);
-    } while (type != "#");
+        ++total;
+        string from_num, to_num, date, from_time, to_time;
+        cin >> from_num >> to_num >> date >> from_time >> to_time;
+        //Nếu số sai tăng biến đếm số sai lên
+        if (!check(from_num) || !check(to_num))
+            ++incorrect;
+        //tăng số cuộc gọi 
+        quantity[from_num]++;
+        //tính thời gian được nhập
+        timeP[from_num] += count(from_time, to_time);
+    } while (choice != "#"); //dừng lại khi gặp kí tự #
 
     do
     {
-        cin >> type;
-        if (type == "#")
+        cin >> choice;
+        if (choice == "#")
             continue;
-        if (type == "?check_phone_number")
+        if (choice == "?check_phone_number")
         {
-            cout << !incorrectPhone << endl;
+            cout << !incorrect << endl;
         }
-        else if (type == "?number_calls_from")
-        {
-            string phone;
-            cin >> phone;
-            cout << numberCalls[phone] << endl;
-        }
-        else if (type == "?number_total_calls")
-            cout << totalCalls << endl;
-        else if (type == "?count_time_calls_from")
+        else if (choice == "?number_calls_from")
         {
             string phone;
             cin >> phone;
-            cout << timeCall[phone] << endl;
+            cout << quantity[phone] << endl;
         }
-    } while (type != "#");
+        else if (choice == "?number_total_calls")
+            cout << total << endl;
+        else if (choice == "?count_time_calls_from")
+        {
+            string phone;
+            cin >> phone;
+            cout << timeP[phone] << endl;
+        }
+    } while (choice != "#");
     return 0;
 }
